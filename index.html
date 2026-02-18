@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Časni Kur'an - Besim Korkut | N.Abazi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <style>
+        /* Tvoj originalni CSS ostaje isti – nisam ga mijenjao da ne mijenjam dizajn */
+        :root {
+            --primary-color: #d4af37;
+            --bg-overlay: rgba(10, 15, 30, 0.96);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #f8fafc;
+            --latin-font: 'Roboto', sans-serif;
+            --arabic-font: 'Amiri', serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: var(--latin-font);
+            color: var(--text-color);
+            background-color: #000;
+            background-image: url('https://z-cdn-media.chatglm.cn/files/a402d569-88e7-45a7-8933-08382dd5946c.png?auth_key=1871329771-a091cdd4de70401da22b6c11c5ccffbf-0-086872317d0c173da5da36f76899726d');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: var(--bg-overlay);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+        }
+        header { text-align: center; padding: 10px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.3); }
+        h1 { font-family: var(--arabic-font); font-size: 2rem; color: var(--primary-color); margin-bottom: 5px; }
+        .author-credit { font-size: 1rem; color: #00ff00; text-shadow: 0 0 5px rgba(0, 255, 0, 0.4); font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
+        .controls-top { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        @media(min-width: 600px) { .controls-top { flex-direction: row; justify-content: center; } }
+        select { padding: 10px; border-radius: 5px; background: #1e293b; color: white; border: 1px solid var(--primary-color); font-size: 1rem; width: 100%; max-width: 300px; }
+        .prayer-section { background: var(--card-bg); border-radius: 10px; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .prayer-times-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; text-align: center; }
+        @media(min-width: 600px) { .prayer-times-grid { grid-template-columns: repeat(6, 1fr); } }
+        .prayer-card { background: rgba(0, 0, 0, 0.3); padding: 8px 2px; border-radius: 5px; }
+        .prayer-name { font-size: 0.7rem; display: block; opacity: 0.8; }
+        .prayer-time { font-size: 0.95rem; font-weight: bold; color: var(--primary-color); display: block; }
+        .reader-section { flex: 1; background: var(--card-bg); border-radius: 10px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; min-height: 60vh; position: relative; }
+        .reader-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .font-controls button { background: rgba(255,255,255,0.1); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; font-size: 1.1rem; }
+        .share-btn { background: linear-gradient(135deg, #10b981, #059669); border: none; color: white; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 5px; transition: transform 0.2s; }
+        .share-btn:hover { transform: scale(1.05); }
+        .content-wrapper { flex: 1; overflow-y: auto; padding-right: 5px; }
+        .surah-content { width: 100%; }
+        .text-arabic { font-family: var(--arabic-font); font-size: 28px; line-height: 2.4; color: #fff; direction: rtl; text-align: center; }
+        .text-translation { font-family: var(--latin-font); font-size: 18px; line-height: 2.0; color: #f1f5f9; text-align: left; }
+        .surah-header { text-align: center; color: var(--primary-color); font-weight: bold; font-size: 1.5em; margin-bottom: 25px; border-bottom: 2px solid var(--primary-color); padding-bottom: 15px; line-height: 1.4; }
+        .bismillah { text-align: center; font-style: italic; margin-bottom: 20px; font-size: 1.1em; color: #fbbf24; }
+        .ayah-count { font-size: 0.9em; color: #94a3b8; font-weight: normal; margin-left: 8px; }
+        .translation-info { font-size: 0.75rem; color: #10b981; text-align: center; margin-bottom: 15px; padding: 5px; background: rgba(16, 185, 129, 0.1); border-radius: 5px; }
+        .ayah-container { margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
+        .ayah-container:hover { background: rgba(255,255,255,0.05); }
+        .ayah-container.active { background: rgba(212, 175, 55, 0.15); border-left: 5px solid var(--primary-color); }
+        .ayah-num { color: var(--primary-color); font-size: 1.2em; font-weight: bold; margin-right: 10px; display: inline-block; }
+        .loader-small { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: var(--primary-color); animation: spin 1s linear infinite; margin-left: 10px; vertical-align: middle; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        footer { text-align: center; padding: 10px; font-size: 0.75rem; color: #64748b; margin-top: auto; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; animation: slideUp 0.3s ease; display: none; }
+        @keyframes slideUp { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        .error-details { font-size: 0.8rem; color: #ef4444; margin-top: 10px; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header>
+        <h1>Časni Kur'an</h1>
+        <div class="author-credit">Autor: N.Abazi Gornja Rapca Gora - Bochum Germany 2026</div>
+        <div class="controls-top">
+            <label style="font-size:0.9rem;">Jezik:</label>
+            <select id="lang-selector" onchange="changeLanguage()">
+                <option value="de">Deutsch – Abu Rida (precizno)</option>
+                <option value="bs" selected>Bosanski – Besim Korkut</option>
+                <option value="ar">عربي (Arapski)</option>
+            </select>
+            <label style="font-size:0.9rem;">Vaktija:</label>
+            <select id="city-selector" onchange="updatePrayerTimes()">
+                <option value="bochum">Bochum, DE</option>
+                <option value="essen">Essen, DE</option>
+                <option value="dortmund">Dortmund, DE</option>
+                <option value="wien">Wien, AT</option>
+                <option value="baden">Baden, AT</option>
+                <option value="gornja_rapca">Gornja Rapča, XK</option>
+                <option value="dielsdorf">Dielsdorf, CH</option>
+            </select>
+        </div>
+    </header>
+    <section class="prayer-section">
+        <div class="prayer-header" style="display:flex; justify-content:space-between; font-size:0.8rem; color:#cbd5e1; margin-bottom:5px;">
+            <span id="current-date">Učitavanje datuma...</span>
+            <button class="share-btn" onclick="shareApp()">🔗 Podijeli</button>
+        </div>
+        <div class="prayer-times-grid" id="prayer-grid">
+            <div style="grid-column:1/-1; text-align:center; padding:10px;">Učitavanje vaktije...</div>
+        </div>
+    </section>
+    <section class="reader-section">
+        <div class="reader-toolbar">
+            <div class="font-controls">
+                <button onclick="adjustFont(-2)">A-</button>
+                <button onclick="adjustFont(2)">A+</button>
+            </div>
+            <div style="display:flex; gap:5px; align-items:center; flex:1; justify-content:center;">
+                <button onclick="changeSurah(-1)" style="padding:8px 12px; background:rgba(255,255,255,0.1); border:1px solid #fff; color:#fff; cursor:pointer; border-radius:5px;">◀</button>
+                <select id="surah-selector" onchange="loadSurah(this.value)" style="min-width:220px; font-size:1rem;">
+                    <option value="" disabled selected>Izaberi suru</option>
+                </select>
+                <button onclick="changeSurah(1)" style="padding:8px 12px; background:rgba(255,255,255,0.1); border:1px solid #fff; color:#fff; cursor:pointer; border-radius:5px;">▶</button>
+            </div>
+            <button onclick="scrollToActiveAyah()" style="padding:5px 10px; cursor:pointer; background:transparent; border:1px solid #d4af37; color:#d4af37; border-radius:5px; font-size:0.8rem;">Nastavi</button>
+        </div>
+        <div class="content-wrapper" id="quran-scroll-area">
+            <div class="surah-content" id="main-container">Učitavanje sure...</div>
+        </div>
+    </section>
+    <footer id="footer-text">Prijevod: Besim Korkut</footer>
+</div>
+<div class="toast" id="toast">✓ Link kopiran!</div>
+<script>
+// === SAFE LOCALSTORAGE WRAPPER ===
+const storage = {
+    get: (key, defaultValue = null) => {
+        try { return localStorage.getItem(key) || defaultValue; }
+        catch (e) { console.warn("localStorage read blocked:", e); return defaultValue; }
+    },
+    set: (key, value) => {
+        try { localStorage.setItem(key, value); }
+        catch (e) { console.warn("localStorage write blocked:", e); }
+    }
+};
+// === KONSTANTE ===
+const ayahCounts = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,55,56,40,31,51,52,44,45,55,40,56,54,44,15,15,13,11,7,11,22,8,8,19,19,11,14,10,7,13,15,21,23,11,7,7,20,19,11,6,12,12,7,9,5,8,5,6,5,3,5,6,6,3,5,4,5,6];
+const surahNamesBS = ["El-Fatiha","El-Bekara","Ali Imran","En-Nisa","El-Maide","En-Enam","El-Araf","En-Enfal","Et-Tevbe","Junus","Hud","Jusuf","Er-Rad","Ibrahim","El-Hidžr","En-Nehl","El-Isra","El-Kehf","Merjem","Ta-Ha","El-Enbijaa","El-Hadž","El-Muminun","En-Nur","El-Furkan","Eš-Šu'ara","En-Neml","El-Kasas","El-Ankebut","Er-Rum","Lukman","Es-Sedžde","El-Ahzab","Sebe","Fatir","Ja-Sin","Es-Saffat","Sad","Ez-Zumer","Gafer","Fusilat","Eš-Šura","Ez-Zuhruf","Ed-Duhan","El-Džasije","El-Ahkaf","Muhamed","El-Fetih","El-Hudžurat","Kaf","Ez-Zarijat","Et-Tur","En-Nedžm","El-Kamer","Er-Rahman","El-Vaki'a","El-Hadid","El-Mužadile","El-Hashr","El-Mumtehine","Es-Saff","El-Džumu'a","El-Munafikun","Et-Tagabun","Et-Talak","Et-Tehrim","El-Mulk","El-Kalem","El-Hakka","El-Mearidž","Nuh","El-Džinn","El-Muzzemmil","El-Mudesir","El-Kijame","El-Insan","El-Mursalat","En-Nebe","En-Nazi'at","Abese","Et-Tekvir","El-Infitar","El-Mutaffifun","El-Insikak","El-Burdž","Et-Tarik","El-A'la","El-Gashije","El-Fedžr","El-Beled","Eš-Šems","El-Lejl","Ed-Duha","Eš-Šerh","Et-Tin","El-'Alek","El-Kadr","El-Bejjine","El-Zilzal","El-Adijat","El-Kari'a","Et-Tekasur","El-Asr","El-Humaze","El-Fil","Kurejš","El-Ma'un","El-Keuser","El-Kafirun","En-Nasr","El-Lehb","El-Ihlas","El-Felak","En-Nas"];
+const surahNamesDE = ["Die Eröffnung","Die Kuh","Die Familie Imran","Die Frauen","Der Tisch","Das Vieh","Die Mauern","Die Beute","Die Reue","Jonas","Hud","Joseph","Der Donner","Abraham","Der Felsen","Die Bienen","Die Nachtreise","Die Höhle","Maria","Ta-Ha","Die Propheten","Die Pilgerfahrt","Die Gläubigen","Das Licht","Die Unterscheidung","Die Dichter","Die Ameisen","Die Geschichten","Die Spinne","Die Römer","Lukman","Die Anbetung","Die Allianz","Saba","Der Schöpfer","Ya-Sin","Die Reihen","Sad","Die Scharen","Der Vergebende","Die Erklärung","Der Aufstieg","Der Rauch","Die Kniebeugung","Die Sandhügel","Muhammad","Der Sieg","Die Gemächer","Qaf","Die Wirbelstürme","Der Berg","Der Stern","Der Mond","Der Gnädige","Das Beben","Das Eisen","Der Streit","Die Sammlung","Die Reihe","Der Freitag","Die Heuchler","Der Verlust","Die Scheidung","Das Verbot","Die Herrschaft","Der Stift","Die Wahrheit","Derjenige, der ruft","Die Stufen","Noah","Die Dschinn","Die Einhüllenden","Die Vermummten","Die Auferstehung","Der Mensch","Die Gesandten","Die Nachricht","Die Reißenden","Er schmähst","Die Umwälzung","Der Bruch","Die Betrüger","Die Entzweiung","Die Türme","Der Nachtwandler","Der Höchste","Die Verschlossenen","Die Morgendämmerung","Die Stadt","Die Sonne","Die Nacht","Die Helligkeit des Morgens","Der Allerbarmer","Der Feigenbaum","Der Embryo","Die Bestimmung","Der Beweis","Das Beben","Die Stürmenden","Der Zusammenbruch","Die Habsucht","Die Zeit","Der Verleumder","Der Elefant","Quraisch","Die Wohltätigkeit","Der Überfluss","Die Ungläubigen","Die Hilfe","Die Palmfaser","Die Aufrichtigkeit","Die Morgendämmerung","Die Menschen"];
+const surahNamesAR = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
+let state = { surah: 1, ayah: 1, fontSize: 18, city: 'bochum', lang: 'bs' };
+const locations = {
+    bochum: { coords: [51.4818, 7.2162], name: "Bochum" },
+    essen: { coords: [51.4556, 7.0116], name: "Essen" },
+    dortmund: { coords: [51.5136, 7.4653], name: "Dortmund" },
+    wien: { coords: [48.2082, 16.3738], name: "Wien" },
+    baden: { coords: [48.0061, 16.2317], name: "Baden" },
+    gornja_rapca: { coords: [42.058, 20.642], name: "G.Rapča" },
+    dielsdorf: { coords: [47.4947, 8.4389], name: "Dielsdorf" }
+};
+document.addEventListener('DOMContentLoaded', () => {
+    populateSurahSelect();
+    loadProgress();
+    updatePrayerTimes(true);
+    loadSurah(state.surah);
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js').then(() => console.log('SW registered')).catch(e => console.error('SW error:', e));
+    }
+});
+// === DINAMIČKI NAZIVI SURA ===
+function getSurahDisplayName(index) {
+    const number = index + 1;
+    let name = '';
+    let ayahText = state.lang === 'ar' ? 'آية' : 'ajeta';
+    if (state.lang === 'ar') name = surahNamesAR[index];
+    else if (state.lang === 'de') name = surahNamesDE[index];
+    else name = surahNamesBS[index];
+    return `${number}. ${name} (${ayahCounts[index]} ${ayahText})`;
+}
+function populateSurahSelect() {
+    const select = document.getElementById('surah-selector');
+    select.innerHTML = '<option value="" disabled selected>Izaberi suru</option>';
+    for (let i = 0; i < 114; i++) {
+        const opt = document.createElement('option');
+        opt.value = i + 1;
+        opt.textContent = getSurahDisplayName(i);
+        select.appendChild(opt);
+    }
+    select.value = state.surah;
+}
+// === PROGRESS ===
+function loadProgress() {
+    const saved = storage.get('quranProgress_MultiLang');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            state.surah = parsed.surah || 1;
+            state.ayah = parsed.ayah || 1;
+            state.lang = parsed.lang || 'bs';
+            state.city = parsed.city || 'bochum';
+        } catch(e) {}
+    }
+    document.getElementById('lang-selector').value = state.lang;
+    document.getElementById('city-selector').value = state.city;
+    populateSurahSelect();
+}
+function saveProgress(s, a) {
+    state.surah = s; state.ayah = a;
+    storage.set('quranProgress_MultiLang', JSON.stringify({
+        surah: s, ayah: a, lang: state.lang, city: state.city
+    }));
+}
+// === JEZIK ===
+function changeLanguage() {
+    state.lang = document.getElementById('lang-selector').value;
+    saveProgress(state.surah, state.ayah);
+    populateSurahSelect();
+    loadSurah(state.surah);
+}
+// === PROMJENA SURE ===
+function changeSurah(dir) {
+    let curr = parseInt(document.getElementById('surah-selector').value) || 1;
+    let newSurah = curr + dir;
+    if (newSurah >= 1 && newSurah <= 114) loadSurah(newSurah);
+}
+// === UCITAVANJE SURE ===
+function loadSurah(number) {
+    document.getElementById('surah-selector').value = number;
+    const container = document.getElementById('main-container');
+    const scrollArea = document.getElementById('quran-scroll-area');
+    const footer = document.getElementById('footer-text');
+    scrollArea.scrollTop = 0;
+    container.innerHTML = `<div style="padding:40px; text-align:center;">Učitavanje sure...<div class="loader-small"></div></div>`;
+    if (state.lang === 'ar') footer.textContent = "Arapski tekst (Uthmani)";
+    else if (state.lang === 'de') footer.textContent = "Übersetzung: Abu-Rida (precizna)";
+    else footer.textContent = "Prijevod: Besim Korkut";
+    if (number === 1 && state.lang !== 'ar') {
+        container.innerHTML = getHardcoded(number);
+        applyFontStyles();
+        if (state.surah === 1) setTimeout(scrollToActiveAyah, 300);
+        return;
+    }
+    // Provjeri keš prvo (za offline)
+    const cachedSurah = storage.get(`surah_${number}_${state.lang}`);
+    if (cachedSurah) {
+        renderContent(JSON.parse(cachedSurah), number, getTranslationInfo());
+        return;
+    }
+    fetchContent(number);
+}
+function getTranslationInfo() {
+    if (state.lang === 'ar') return "";
+    if (state.lang === 'de') return "✓ Übersetzung: Abu-Rida (precizna)";
+    return "✓ Prijevod: Besim Korkut";
+}
+// === HARDCODED SURA 1 ===
+function getHardcoded(number) {
+    if (state.lang === 'de') return `
+        <div class="translation-info">✓ Übersetzung: Abu-Rida (precizna)</div>
+        <div class="surah-header">1. Die Eröffnung <span class="ayah-count">(7 ajeta)</span></div>
+        <div class="bismillah">Im Namen Allahs, des Allerbarmers, des Barmherzigen.</div>
+        <div class="ayah-container" id="ayah-1" onclick="markAyah(1)"><span class="ayah-num">1.</span>Alles Lob gebührt Allah, dem Herrn der Welten,</div>
+        <div class="ayah-container" id="ayah-2" onclick="markAyah(2)"><span class="ayah-num">2.</span>dem Allerbarmer, dem Barmherzigen,</div>
+        <div class="ayah-container" id="ayah-3" onclick="markAyah(3)"><span class="ayah-num">3.</span>dem Herrscher am Tag des Gerichts.</div>
+        <div class="ayah-container" id="ayah-4" onclick="markAyah(4)"><span class="ayah-num">4.</span>Dir (allein) dienen wir, und Dich (allein) bitten wir um Hilfe.</div>
+        <div class="ayah-container" id="ayah-5" onclick="markAyah(5)"><span class="ayah-num">5.</span>Leite uns den geraden Weg,</div>
+        <div class="ayah-container" id="ayah-6" onclick="markAyah(6)"><span class="ayah-num">6.</span>den Weg derer, denen Du Gnade erwiesen hast,</div>
+        <div class="ayah-container" id="ayah-7" onclick="markAyah(7)"><span class="ayah-num">7.</span>nicht (den Weg) derer, denen (Dein) Zorn (gilt), und nicht (den Weg) der Irregehenden.</div>`;
+    if (state.lang === 'bs') return `
+        <div class="translation-info">✓ Prijevod: Besim Korkut</div>
+        <div class="surah-header">1. El-Fatiha <span class="ayah-count">(7 ajeta)</span></div>
+        <div class="bismillah">U ime Allaha, Milostivog, Samilosnog!</div>
+        <div class="ayah-container" id="ayah-1" onclick="markAyah(1)"><span class="ayah-num">1.</span>Tebe, Allaha, Gospodara svjetova, hvalimo,</div>
+        <div class="ayah-container" id="ayah-2" onclick="markAyah(2)"><span class="ayah-num">2.</span>Milostivog, Samilosnog,</div>
+        <div class="ayah-container" id="ayah-3" onclick="markAyah(3)"><span class="ayah-num">3.</span>Vladara Dana sudnjeg.</div>
+        <div class="ayah-container" id="ayah-4" onclick="markAyah(4)"><span class="ayah-num">4.</span>Tebi se klanjamo i od Tebe pomoć tražimo!</div>
+        <div class="ayah-container" id="ayah-5" onclick="markAyah(5)"><span class="ayah-num">5.</span>Uputi nas na Pravi put,</div>
+        <div class="ayah-container" id="ayah-6" onclick="markAyah(6)"><span class="ayah-num">6.</span>na Put onih kojima si milost Svoju darovao,</div>
+        <div class="ayah-container" id="ayah-7" onclick="markAyah(7)"><span class="ayah-num">7.</span>a ne onih koji su protiv sebe srdžbu izazvali, niti onih koji su zalutali!</div>`;
+    return "";
+}
+// === FETCH SADRŽAJA ===
+async function fetchContent(number) {
+    let url = "";
+    let info = getTranslationInfo();
+    if (state.lang === 'ar') {
+        url = `https://api.alquran.cloud/v1/surah/${number}`;
+    } else if (state.lang === 'de') {
+        url = `https://api.alquran.cloud/v1/surah/${number}/de.aburida`;
+    } else {
+        url = `https://api.alquran.cloud/v1/surah/${number}/bs.korkut`;
+    }
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`API error: ${res.status} - ${res.statusText}`);
+        const data = await res.json();
+        if (data.code !== 200) throw new Error(`API code: ${data.code}`);
+        let surahData = data.data;
+        // Keširaj za offline
+        storage.set(`surah_${number}_${state.lang}`, JSON.stringify(surahData));
+        renderContent(surahData, number, info);
+    } catch (e) {
+        let errorMsg = e.message || 'Nepoznata greška';
+        if (e.name === 'TypeError') errorMsg = 'Nema interneta ili blokiran pristup (provjeri ad-blocker/VPN)';
+        document.getElementById('main-container').innerHTML = `
+            <div style="text-align:center; padding:40px; color:#f87171;">
+                Greška pri učitavanju sure: ${errorMsg}. 
+                <div class="error-details">Savjet: Isključi ad-blocker, provjeri internet, ili pokreni preko servera (ne file://). API radi normalno.</div>
+                <button onclick="loadSurah(${number})" style="margin-top:10px; padding:8px 16px; background:#10b981; border:none; color:white; border-radius:5px; cursor:pointer;">Pokušaj ponovo</button>
+            </div>`;
+    }
+}
+function renderContent(surahData, number, translationInfo) {
+    let html = translationInfo ? `<div class="translation-info">${translationInfo}</div>` : "";
+    const ayahCount = ayahCounts[number-1];
+    if (state.lang === 'ar') {
+        html += `<div class="surah-header">سورة ${surahData.name} <span class="ayah-count">(${ayahCount} آية)</span></div>`;
+    } else {
+        html += `<div class="surah-header">${number}. ${getSurahDisplayName(number-1).split('. ')[1]} <span class="ayah-count">(${ayahCount} ajeta)</span></div>`;
+    }
+    surahData.ayahs.forEach(ayah => {
+        const num = ayah.numberInSurah;
+        const isActive = (number === state.surah && num === state.ayah) ? 'active' : '';
+        let text = ayah.text.trim();
+        html += `<div class="ayah-container ${isActive}" id="ayah-${num}" onclick="markAyah(${num})"><span class="ayah-num">${num}.</span> ${text}</div>`;
+    });
+    document.getElementById('main-container').innerHTML = html;
+    applyFontStyles();
+    if (state.surah === number) setTimeout(scrollToActiveAyah, 300);
+}
+function applyFontStyles() {
+    const container = document.getElementById('main-container');
+    if (state.lang === 'ar') {
+        container.className = 'surah-content text-arabic';
+        container.style.fontSize = `${state.fontSize + 10}px`;
+    } else {
+        container.className = 'surah-content text-translation';
+        container.style.fontSize = `${state.fontSize}px`;
+    }
+}
+function markAyah(a) {
+    document.querySelectorAll('.ayah-container').forEach(el => el.classList.remove('active'));
+    const el = document.getElementById(`ayah-${a}`);
+    if (el) el.classList.add('active');
+    saveProgress(parseInt(document.getElementById('surah-selector').value), a);
+}
+function scrollToActiveAyah() {
+    const el = document.getElementById(`ayah-${state.ayah}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function adjustFont(delta) {
+    state.fontSize += delta;
+    state.fontSize = Math.max(14, Math.min(40, state.fontSize));
+    document.getElementById('main-container').style.fontSize = `${state.fontSize}px`;
+}
+// === VAKTIJA ===
+function updatePrayerTimes(isStartup = false) {
+    const cityKey = document.getElementById('city-selector').value;
+    state.city = cityKey;
+    saveProgress(state.surah, state.ayah);
+    const city = locations[cityKey];
+    const timestamp = Math.round(Date.now() / 1000);
+    const url = `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${city.coords[0]}&longitude=${city.coords[1]}&method=13`;
+    const grid = document.getElementById('prayer-grid');
+    const cached = storage.get(`prayerTimes_${cityKey}`);
+    if (cached) {
+        try {
+            const parsed = JSON.parse(cached);
+            if (Date.now() - parsed.timestamp < 24*60*60*1000) {
+                document.getElementById('current-date').textContent = `${parsed.date.readable} | ${parsed.date.hijri.day}. ${parsed.date.hijri.month.en} ${parsed.date.hijri.year} AH`;
+                renderPrayerTimes(parsed.timings);
+                if (!isStartup) return;
+            }
+        } catch(e) {}
+    }
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:10px;">Učitavanje vaktije za ${city.name}...</div>`;
+    fetch(url)
+        .then(r => r.json())
+        .then(data => {
+            const t = data.data.timings;
+            const d = data.data.date;
+            storage.set(`prayerTimes_${cityKey}`, JSON.stringify({ timings: t, date: d, timestamp: Date.now() }));
+            document.getElementById('current-date').textContent = `${d.readable} | ${d.hijri.day}. ${d.hijri.month.en} ${d.hijri.year} AH`;
+            renderPrayerTimes(t);
+        })
+        .catch((e) => {
+            let errorMsg = e.message || 'Nepoznato';
+            if (e.name === 'TypeError') errorMsg = 'Nema interneta ili blokiran pristup';
+            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:10px; color:#f87171;">Greška: ${errorMsg} – provjeri internet/ad-blocker.</div>`;
+        });
+}
+function renderPrayerTimes(t) {
+    const prayers = [
+        ['Zora', t.Fajr],
+        ['Izlazak', t.Sunrise],
+        ['Podne', t.Dhuhr],
+        ['Ikindija', t.Asr],
+        ['Akšam', t.Maghrib],
+        ['Jacija', t.Isha]
+    ];
+    document.getElementById('prayer-grid').innerHTML = prayers.map(([name, time]) => `
+        <div class="prayer-card">
+            <span class="prayer-name">${name}</span>
+            <span class="prayer-time">${time}</span>
+        </div>
+    `).join('');
+}
+// === SHARE ===
+function shareApp() {
+    const url = window.location.href;
+    if (navigator.share) {
+        navigator.share({ title: 'Časni Kur\'an', text: 'Kuran na bosanskom, njemačkom i arapskom', url });
+    } else {
+        navigator.clipboard.writeText(url).then(() => showToast('✓ Link kopiran!'));
+    }
+}
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+}
+</script>
+</body>
+</html>
